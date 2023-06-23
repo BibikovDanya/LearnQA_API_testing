@@ -6,35 +6,36 @@ supported_methods = ['GET', 'POST', 'PUT', 'DELETE']
 
 def test_request_without_parameter():
     response = requests.get(f"{default_url}/compare_query_type")
-    assert str(response.text) == 'Wrong method provided'
+    assert str(response.text) == 'Wrong method provided', "The response does not contain 'Wrong method provided'"
 
     response = requests.post(f"{default_url}/compare_query_type")
-    assert str(response.text) == 'Wrong method provided'
+    assert str(response.text) == 'Wrong method provided', "The response does not contain 'Wrong method provided'"
 
     response = requests.put(f"{default_url}/compare_query_type")
-    assert str(response.text) == 'Wrong method provided'
+    assert str(response.text) == 'Wrong method provided', "The response does not contain 'Wrong method provided'"
 
     response = requests.delete(f"{default_url}/compare_query_type")
-    assert str(response.text) == 'Wrong method provided'
+    assert str(response.text) == 'Wrong method provided', "The response does not contain 'Wrong method provided'"
 
 
 def test_no_supported_methods():
     for method in supported_methods:
         response = requests.patch(f"{default_url}/compare_query_type", data=f"method={method}")
-        assert response.status_code == 400
-        assert response.text == 'Wrong HTTP method'
+        status_code = response.status_code
+        assert status_code == 400, f"Received the status code is not 400 but {status_code}"
+        assert response.text == 'Wrong HTTP method',  f"Error: method: {method} response_text: {response.text}"
 
     for method in supported_methods:
         response = requests.head(f"{default_url}/compare_query_type", data=f"method={method}")
-        assert response.status_code == 400
-        print(f"method: {method} response_text: {response.text}")
+        status_code = response.status_code
+        assert status_code == 400, f"Received the status code is not 400 but {status_code}"
         # TODO: при запросе типа head не приходит "Wrong HTTP method"
-        # assert response.text == 'Wrong HTTP method'
+        # assert response.text == 'Wrong HTTP method', f"Error: method: {method} response_text: {response.text}"
 
 
 def test_support_method_and_params():
     response_get = requests.get(f"{default_url}/compare_query_type", params=f"method=GET")
-    assert response_get.status_code == 200
+    assert response_get.status_code == 200, f"Received the status code is not 200 but {response_get.status_code}"
     assert response_get.text == '{"success":"!"}'
 
     response_post = requests.post(f"{default_url}/compare_query_type", data={'method': 'POST'})
