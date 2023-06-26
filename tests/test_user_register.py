@@ -1,4 +1,5 @@
 import requests
+import pytest
 from lib.base_case import BaseCase
 from lib.assertions import Assertions
 from environment import default_url
@@ -6,6 +7,14 @@ from datetime import datetime
 
 
 class TestUserRegister(BaseCase):
+    exclude_params = [
+        ("password"),
+        ("username"),
+        ("firstName"),
+        ("lastName"),
+        ("email")
+    ]
+
     def setup_method(self):
         base_part = 'learnqa'
         domain = 'example.com'
@@ -60,4 +69,54 @@ class TestUserRegister(BaseCase):
         response = requests.post(f"{default_url}/user", data=data)
 
         Assertions.expected_status_code(response, 400)
-        assert response.content.decode('utf-8') == 'Invalid email format'
+        invalid_email_format_message = 'Invalid email format'
+        assert response.content.decode('utf-8') == invalid_email_format_message, \
+            f"Expected response content: {invalid_email_format_message}. Actual: {response.content.decode('utf-8')}"
+
+    @pytest.mark.parametrize('condition', exclude_params)
+    def test_create_user_with_missing_required_field(self, condition):
+        match condition:
+            case "password":
+                data = {
+                    'username': 'learnqa',
+                    'firstName': 'learnqa',
+                    'lastName': 'learnqa',
+                    'email': self.email
+
+                }
+            case "username":
+                data = {
+                    'password': '1234',
+                    'firstName': 'learnqa',
+                    'lastName': 'learnqa',
+                    'email': self.email
+                }
+            case "firstName":
+                data = {
+                    'password': '1234',
+                    'username': 'learnqa',
+                    'lastName': 'learnqa',
+                    'email': self.email
+                }
+            case "lastName":
+                data = {
+                    'password': '1234',
+                    'username': 'learnqa',
+                    'firstName': 'learnqa',
+                    'email': self.email
+                }
+            case "email":
+                data = {
+                    'password': '1234',
+                    'username': 'learnqa',
+                    'firstName': 'learnqa',
+                    'lastName': 'learnqa'
+                }
+
+        response = requests.post(f"{default_url}/user", data=data)
+
+        missing_required_field_message = f"The following required params are missed: {condition}"
+        assert response.content.decode('utf-8') == missing_required_field_message, \
+            f"Expected response content: {missing_required_field_message}. Actual: {response.content.decode('utf-8')}"
+        Assertions.expected_status_code(response, 400)
+
