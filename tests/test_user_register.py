@@ -43,3 +43,21 @@ class TestUserRegister(BaseCase):
         assert response.content.decode('utf-8') == f"Users with email '{email}' already exists", \
             f"Unexpected response content {response.content}"
 
+    def test_create_user_with_uncorrected_email(self):
+        base_part = 'learnqa'
+        domain = 'example.com'
+        random_part = datetime.now().strftime("%m%d%Y%H%M%S")
+        uncorrected_email = f"{base_part}{random_part}{domain}"  # email без @
+        data = {
+            'password': '1234',
+            'username': 'learnqa',
+            'firstName': 'learnqa',
+            'lastName': 'learnqa',
+            'email': uncorrected_email
+
+        }
+
+        response = requests.post(f"{default_url}/user", data=data)
+
+        Assertions.expected_status_code(response, 400)
+        assert response.content.decode('utf-8') == 'Invalid email format'
