@@ -120,3 +120,23 @@ class TestUserRegister(BaseCase):
             f"Expected response content: {missing_required_field_message}. Actual: {response.content.decode('utf-8')}"
         Assertions.expected_status_code(response, 400)
 
+    def test_to_short_name(self):
+        name = 'n'
+        data = {
+            'password': '1234',
+            'username': name,
+            'firstName': 'learnqa',
+            'lastName': 'learnqa',
+            'email': self.email
+        }
+
+        response = requests.post(f"{default_url}/user", data=data)
+
+        short_name_message = f"The value of 'username' field is too short"
+        assert response.content.decode('utf-8') == short_name_message, \
+            f"Expected response content: {short_name_message}. Actual: {response.content.decode('utf-8')}"
+
+        Assertions.expected_status_code(response, 400)
+
+
+
