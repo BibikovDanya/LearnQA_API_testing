@@ -5,7 +5,7 @@ from environment import default_url
 
 
 class TestUserGet(BaseCase):
-    def test_user_get_details_not_auth(self):
+    def test_get_user_details_not_auth(self):
         response = requests.get(f"{default_url}/user/2")
         print(response.content)
 
