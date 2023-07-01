@@ -3,7 +3,6 @@ import pytest
 from lib.base_case import BaseCase
 from lib.assertions import Assertions
 from environment import default_url
-from datetime import datetime
 
 
 class TestUserRegister(BaseCase):
@@ -15,20 +14,8 @@ class TestUserRegister(BaseCase):
         ("email")
     ]
 
-    def setup_method(self):
-        base_part = 'learnqa'
-        domain = 'example.com'
-        random_part = datetime.now().strftime("%m%d%Y%H%M%S")
-        self.email = f"{base_part}{random_part}@{domain}"
-
     def test_create_user_successfully(self):
-        data = {
-            'password': '1234',
-            'username': 'learnqa',
-            'firstName': 'learnqa',
-            'lastName': 'learnqa',
-            'email': self.email
-        }
+        data = self.prepare_registration_data()
 
         response = requests.post(f"{default_url}/user", data=data)
 
@@ -37,14 +24,7 @@ class TestUserRegister(BaseCase):
 
     def test_create_user_with_existing_email(self):
         email = 'vinkotov@example.com'
-        data = {
-            'password': '1234',
-            'username': 'learnqa',
-            'firstName': 'learnqa',
-            'lastName': 'learnqa',
-            'email': email
-
-        }
+        data = self.prepare_registration_data(email)
 
         response = requests.post(f"{default_url}/user", data=data)
 
@@ -139,7 +119,7 @@ class TestUserRegister(BaseCase):
         Assertions.expected_status_code(response, 400)
 
     def test_too_long_name(self):
-        name = 'n'*251
+        name = 'n' * 251
         data = {
             'password': '1234',
             'username': name,
@@ -155,5 +135,3 @@ class TestUserRegister(BaseCase):
             f"Expected response content: {short_name_message}. Actual: {response.content.decode('utf-8')}"
 
         Assertions.expected_status_code(response, 400)
-
-
