@@ -22,12 +22,20 @@ class BaseCase:
 
         return response_as_dict[name]
 
+    def create_email(self, correct=True):
+        base_part = 'learnqa'
+        domain = 'example.com'
+        random_part = datetime.now().strftime("%m%d%Y%H%M%S")
+
+        if correct:
+            email = f"{base_part}{random_part}@{domain}"
+        else:
+            email = f"{base_part}{random_part}{domain}"  # email без @
+        return email
+
     def prepare_registration_data(self, email=None):
         if email is None:
-            base_part = 'learnqa'
-            domain = 'example.com'
-            random_part = datetime.now().strftime("%m%d%Y%H%M%S")
-            email = f"{base_part}{random_part}@{domain}"
+            email = self.create_email()
         return {
             'password': '1234',
             'username': 'learnqa',

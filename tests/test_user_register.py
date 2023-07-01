@@ -33,18 +33,8 @@ class TestUserRegister(BaseCase):
             f"Unexpected response content {response.content}"
 
     def test_create_user_with_uncorrected_email(self):
-        base_part = 'learnqa'
-        domain = 'example.com'
-        random_part = datetime.now().strftime("%m%d%Y%H%M%S")
-        uncorrected_email = f"{base_part}{random_part}{domain}"  # email без @
-        data = {
-            'password': '1234',
-            'username': 'learnqa',
-            'firstName': 'learnqa',
-            'lastName': 'learnqa',
-            'email': uncorrected_email
-
-        }
+        uncorrected_email = self.create_email(correct=False)  # email без @
+        data = self.prepare_registration_data(uncorrected_email)
 
         response = requests.post(f"{default_url}/user", data=data)
 
@@ -55,13 +45,14 @@ class TestUserRegister(BaseCase):
 
     @pytest.mark.parametrize('condition', exclude_params)
     def test_create_user_with_missing_required_field(self, condition):
+        email = self.create_email()
         match condition:
             case "password":
                 data = {
                     'username': 'learnqa',
                     'firstName': 'learnqa',
                     'lastName': 'learnqa',
-                    'email': self.email
+                    'email': email
 
                 }
             case "username":
@@ -69,21 +60,21 @@ class TestUserRegister(BaseCase):
                     'password': '1234',
                     'firstName': 'learnqa',
                     'lastName': 'learnqa',
-                    'email': self.email
+                    'email': email
                 }
             case "firstName":
                 data = {
                     'password': '1234',
                     'username': 'learnqa',
                     'lastName': 'learnqa',
-                    'email': self.email
+                    'email': email
                 }
             case "lastName":
                 data = {
                     'password': '1234',
                     'username': 'learnqa',
                     'firstName': 'learnqa',
-                    'email': self.email
+                    'email': email
                 }
             case "email":
                 data = {
@@ -107,7 +98,7 @@ class TestUserRegister(BaseCase):
             'username': name,
             'firstName': 'learnqa',
             'lastName': 'learnqa',
-            'email': self.email
+            'email': self.create_email()
         }
 
         response = requests.post(f"{default_url}/user", data=data)
@@ -125,7 +116,7 @@ class TestUserRegister(BaseCase):
             'username': name,
             'firstName': 'learnqa',
             'lastName': 'learnqa',
-            'email': self.email
+            'email': self.create_email()
         }
 
         response = requests.post(f"{default_url}/user", data=data)
