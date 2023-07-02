@@ -19,7 +19,7 @@ class TestUserRegister(BaseCase):
 
         response = requests.post(f"{default_url}/user", data=data)
 
-        Assertions.expected_status_code(response, 200)
+        Assertions.assert_code_status(response, 200)
         Assertions.assert_json_has_key(response, "id")
 
     def test_create_user_with_existing_email(self):
@@ -28,7 +28,7 @@ class TestUserRegister(BaseCase):
 
         response = requests.post(f"{default_url}/user", data=data)
 
-        Assertions.expected_status_code(response, 400)
+        Assertions.assert_code_status(response, 400)
         assert response.content.decode('utf-8') == f"Users with email '{email}' already exists", \
             f"Unexpected response content {response.content}"
 
@@ -38,7 +38,7 @@ class TestUserRegister(BaseCase):
 
         response = requests.post(f"{default_url}/user", data=data)
 
-        Assertions.expected_status_code(response, 400)
+        Assertions.assert_code_status(response, 400)
         invalid_email_format_message = 'Invalid email format'
         assert response.content.decode('utf-8') == invalid_email_format_message, \
             f"Expected response content: {invalid_email_format_message}. Actual: {response.content.decode('utf-8')}"
@@ -89,7 +89,7 @@ class TestUserRegister(BaseCase):
         missing_required_field_message = f"The following required params are missed: {condition}"
         assert response.content.decode('utf-8') == missing_required_field_message, \
             f"Expected response content: {missing_required_field_message}. Actual: {response.content.decode('utf-8')}"
-        Assertions.expected_status_code(response, 400)
+        Assertions.assert_code_status(response, 400)
 
     def test_too_short_name(self):
         name = 'n'
@@ -107,7 +107,7 @@ class TestUserRegister(BaseCase):
         assert response.content.decode('utf-8') == short_name_message, \
             f"Expected response content: {short_name_message}. Actual: {response.content.decode('utf-8')}"
 
-        Assertions.expected_status_code(response, 400)
+        Assertions.assert_code_status(response, 400)
 
     def test_too_long_name(self):
         name = 'n' * 251
@@ -125,4 +125,4 @@ class TestUserRegister(BaseCase):
         assert response.content.decode('utf-8') == short_name_message, \
             f"Expected response content: {short_name_message}. Actual: {response.content.decode('utf-8')}"
 
-        Assertions.expected_status_code(response, 400)
+        Assertions.assert_code_status(response, 400)
